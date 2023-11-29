@@ -1,12 +1,11 @@
 from leaderboard_utils.utils import OPENAI_Utils, get_leaderboard_dataframe, log_out
-import sys, os, pathlib
-import yaml
+import json, sys, os
 from yaml.loader import SafeLoader
 import streamlit as st
 
 openAI_utils = OPENAI_Utils()
 
-BASE_DIR = str(pathlib.Path(__file__).parent.parent.absolute())
+BASE_DIR = st.secrets.base_dir
 sys.path.append(BASE_DIR)
 
 with open(os.path.join(BASE_DIR, "UserInfo", "users.json")) as file:

@@ -17,18 +17,18 @@ def relative_time(t_diff):
             return f"{minutes}m"
         else:
             return f"{seconds}s"
-
+def clear_all():
+    with key in st.session_state.keys():
+        del st.session_state[key]
+def clear_chatSession():
+    pass
+    
 def log_out():
-    if st.session_state.get("logged_in"):
-        with open(os.path.join(st.secrets.UserInfoDir, f'{st.secrets.teamname}', f'{st.secrets.username}', "status.json"), 'w') as file:
-            config = json.load(file)
-            config["status"] = "LOGGED_OUT"
-            json.dump(config, file)
-        with st.sidebar:
-            st.button("Logout")
-            with key in st.session_state.keys():
-                del st.session_state[key]
-        
+    
+        return True
+    else:
+        return None
+    
 def get_leaderboard_dataframe(csv_file = 'leaderboard.csv', greater_is_better = True):
     df_leaderboard = pd.read_csv(csv_file)
     df_leaderboard = df_leaderboard.sort_values("TotalScore", ascending = not greater_is_better)
