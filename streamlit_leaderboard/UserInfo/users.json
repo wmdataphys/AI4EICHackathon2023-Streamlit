@@ -1,0 +1,10 @@
+{
+  "Team1" : {
+    "users" : [ "user1", "user2" ],
+    "passwords" : [ "AI4EIC", "AI4EIC" ]
+  },
+  "Team2" : {
+    "users" : [ "user3", "user4" ],
+    "passwords" : [ "AI4EIC", "AI4EIC" ]
+  }
+}
