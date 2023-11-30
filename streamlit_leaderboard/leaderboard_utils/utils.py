@@ -6,7 +6,7 @@ import json
 # funtions
 def relative_time(t_diff):
     days, seconds = t_diff.days, t_diff.seconds
-    if days > 0: 
+    if days > 0:
         return f"{days}d"
     else:
         hours = t_diff.seconds // 3600
@@ -22,13 +22,11 @@ def clear_all():
         del st.session_state[key]
 def clear_chatSession():
     pass
-    
+
 def log_out():
-    
-        return True
-    else:
-        return None
-    
+    return True
+
+
 def get_leaderboard_dataframe(csv_file = 'leaderboard.csv', greater_is_better = True):
     df_leaderboard = pd.read_csv(csv_file)
     df_leaderboard = df_leaderboard.sort_values("TotalScore", ascending = not greater_is_better)
@@ -36,7 +34,7 @@ def get_leaderboard_dataframe(csv_file = 'leaderboard.csv', greater_is_better = 
     df_leaderboard['counter'] = 1
     df_leaderboard = df_leaderboard.groupby('usernames').agg({"TotalScore": "max"})
     df_leaderboard = df_leaderboard.sort_values("TotalScore", ascending = not greater_is_better)
-    df_leaderboard = df_leaderboard.reset_index()                                                    
+    df_leaderboard = df_leaderboard.reset_index()
     df_leaderboard.columns = ['usernames','TotalScore', 'TotalSubmissions', 'TokensUsed']
     """
     return df_leaderboard
@@ -159,7 +157,7 @@ class DB_Utils:
         return self.DB_URL
     def getDB_NAME(self):
         return self.DB_NAME
-        
+
 class OPENAI_Utils:
     def __init__(self):
         self.MAX_TOKENS = 4096
@@ -257,15 +255,17 @@ class OPENAI_Utils:
         Politely decline answering any conversation that is not related to the topic."""
 
         return [sys_context_1, sys_context_2, sys_context_3]
-    
+
     def setContext(self, content = None)->list:
         msgs = []
+        #print(content)
         if(content):
-            for msg in content:
-                msgs.append({"role" : "system", "content" : msg})
+            msgs.append({"role" : "system", "content" : content})
         else:
             for msg in self.getDefaultContexts():
-                msgs.append({"role" : "system", "content" : msg})
+                msgs.append({"role" : "system", "content" : msg,})
+
+        msgs.append({"role": "assistant", "content": "How can I help you?"})
         return msgs
 
     def num_tokens_from_messages(self, messages) -> int:
@@ -280,6 +280,5 @@ class OPENAI_Utils:
                 num_tokens += len(encoding.encode(value))
                 if key == "name":
                     num_tokens += tokens_per_name
-        num_tokens += 4  # every reply is primed with <|start|>assistant<|message|> 
+        num_tokens += 4  # every reply is primed with <|start|>assistant<|message|>
         return num_tokens
-
