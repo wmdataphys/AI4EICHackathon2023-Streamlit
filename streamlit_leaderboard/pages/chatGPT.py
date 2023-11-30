@@ -135,7 +135,7 @@ if st.session_state.submit_button_clicked:
     if "aws_push" not in st.session_state:
         st.session_state["aws_push"] = False
 
-    model = st.secrets.get("OPENAI_API_MODEL") or "gpt-3.5-turbo"
+    model = openAI_utils.GPT_MODEL
     tags = [f"llm_chatbot{'_stream' if st.session_state.stream else ''}.py"]
 
     messages = st.session_state.messages
@@ -145,19 +145,19 @@ if st.session_state.submit_button_clicked:
         if msg["role"] == "assistant" and n > st.session_state.len_context:
             feedback_key = f"feedback_{int(n / 2)}"
             #print("n:", n, "len(prompt_ids):", len(st.session_state.prompt_ids))
-            prompt_index = int(n / 3) - 1
+            #prompt_index = int(n / 3) - 1
             #print("prompt_index:", prompt_index)
             #print("st.session_state.prompt_ids:", st.session_state.prompt_ids)
-            prompt_id = st.session_state.prompt_ids[prompt_index] if prompt_index >= 0 else None
+            #prompt_id = st.session_state.prompt_ids[prompt_index] if prompt_index >= 0 else None
             #print("prompt_id:", prompt_id)
 
             #if feedback_key not in st.session_state:
             #    st.session_state[feedback_key] = None
 
-            if prompt_index >= 0 and prompt_index < len(st.session_state.prompt_ids):
-                prompt_id = st.session_state.prompt_ids[prompt_index]
-            else:
-                prompt_id = None
+            #if prompt_index >= 0 and prompt_index < len(st.session_state.prompt_ids):
+            #    prompt_id = st.session_state.prompt_ids[prompt_index]
+            #else:
+            #    prompt_id = None
             feedback = collector.st_feedback(
                 component="default",
                 feedback_type="thumbs",
@@ -172,7 +172,23 @@ if st.session_state.submit_button_clicked:
                 with st.sidebar:
                     st.write(":orange[Here's the raw feedback you sent to [Trubrics](https://trubrics.streamlit.app/):]")
                     st.write(feedback)
+    
 
+
+    if st.session_state.total_tokens > 12000:
+        st.error("You have exceeded the maximum number of tokens, please start a new session")
+        if st.button("Start New Session",key='MaxTokensReached'):
+            st.session_state.submit_button_clicked = False
+            st.session_state.show_feedback_controls = False
+            st.session_state.aws_state = False
+            st.session_state.messages = []
+            st.session_state.prompt_ids = []
+            st.session_state.total_tokens = 0
+            st.session_state.session_id = str(uuid.uuid4())
+            st.session_state.last_message_count = 0
+            st.session_state.len_context = 0
+            st.rerun()
+    
     #gen_form = st.form(key="generation_form")
     if prompt := st.chat_input("Ask your question"):
         messages.append({"role": "user", "content": prompt})
@@ -183,12 +199,12 @@ if st.session_state.submit_button_clicked:
             if st.session_state.stream:
                 message_placeholder = st.empty()
                 generation = ""
-                for part in client.chat.completions.create(model=model, messages=messages, stream=True):
+                for part in client.chat.completions.create(model=model, messages=messages, stream=True,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS):
                     generation += part.choices[0].delta.content or ""
                     message_placeholder.markdown(generation + "▌")
                 message_placeholder.markdown(generation)
             else:
-                response = client.chat.completions.create(model=model, messages=messages)
+                response = client.chat.completions.create(model=model, messages=messages,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS)
                 generation = response.choices[0].message.content
                 st.write(generation)
 
@@ -235,7 +251,8 @@ if st.session_state.show_feedback_controls:
             st.session_state.show_feedback_controls = False
             st.rerun()
         except:
-            st.warning("Something when wrong, please try again.")
+            st.session_state.show_feedback_controls = False
+            st.error("Error, invalid filename.")
     elif st.button("Cancel"):
         st.session_state.show_feedback_controls = False  # Hide controls
         st.rerun()
