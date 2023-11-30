@@ -1,0 +1,113 @@
+ERROR:root:user4 injected an enormous prompt.
+Traceback (most recent call last):
+  File "/home/admin/AI4EICHackathon2023-Streamlit-main/streamlit_leaderboard/pages/chatGPT.py", line 209, in <module>
+    for part in client.chat.completions.create(model=model, messages=messages, stream=True,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS):
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_utils/_utils.py", line 301, in wrapper
+    return func(*args, **kwargs)
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/resources/chat/completions.py", line 598, in create
+    return self._post(
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 1063, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 842, in request
+    return self._request(
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 885, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 16385 tokens. However, your messages resulted in 17474 tokens. Please reduce the length of the messages.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+ERROR:root:user4 injected an enormous prompt.
+Traceback (most recent call last):
+  File "/home/admin/AI4EICHackathon2023-Streamlit-main/streamlit_leaderboard/pages/chatGPT.py", line 209, in <module>
+    for part in client.chat.completions.create(model=model, messages=messages, stream=True,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS):
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_utils/_utils.py", line 301, in wrapper
+    return func(*args, **kwargs)
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/resources/chat/completions.py", line 598, in create
+    return self._post(
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 1063, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 842, in request
+    return self._request(
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 885, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 16385 tokens. However, you requested 18103 tokens (14007 in the messages, 4096 in the completion). Please reduce the length of the messages or completion.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+ERROR:root:user4 injected an enormous prompt.
+Traceback (most recent call last):
+  File "/home/admin/AI4EICHackathon2023-Streamlit-main/streamlit_leaderboard/pages/chatGPT.py", line 209, in <module>
+    for part in client.chat.completions.create(model=model, messages=messages, stream=True,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS):
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_utils/_utils.py", line 301, in wrapper
+    return func(*args, **kwargs)
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/resources/chat/completions.py", line 598, in create
+    return self._post(
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 1063, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 842, in request
+    return self._request(
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 885, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 16385 tokens. However, your messages resulted in 27879 tokens. Please reduce the length of the messages.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+ERROR:root:user4 injected an enormous prompt.
+Traceback (most recent call last):
+  File "/home/admin/AI4EICHackathon2023-Streamlit-main/streamlit_leaderboard/pages/chatGPT.py", line 209, in <module>
+    for part in client.chat.completions.create(model=model, messages=messages, stream=True,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS):
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_utils/_utils.py", line 301, in wrapper
+    return func(*args, **kwargs)
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/resources/chat/completions.py", line 598, in create
+    return self._post(
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 1063, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 842, in request
+    return self._request(
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 885, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 16385 tokens. However, your messages resulted in 27886 tokens. Please reduce the length of the messages.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+ERROR:root:user5 injected an enormous prompt.
+Traceback (most recent call last):
+  File "/home/admin/AI4EICHackathon2023-Streamlit-main/streamlit_leaderboard/pages/chatGPT.py", line 210, in <module>
+    for part in client.chat.completions.create(model=model, messages=messages, stream=True,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS):
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_utils/_utils.py", line 301, in wrapper
+    return func(*args, **kwargs)
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/resources/chat/completions.py", line 598, in create
+    return self._post(
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 1063, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 842, in request
+    return self._request(
+  File "/home/admin/.conda/envs/stream/lib/python3.10/site-packages/openai/_base_client.py", line 885, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 16385 tokens. However, you requested 18241 tokens (14145 in the messages, 4096 in the completion). Please reduce the length of the messages or completion.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
+ERROR:root:user10 spammed chat.
+NoneType: None
+ERROR:root:user10 double typed.
+Traceback (most recent call last):
+  File "/home/admin/AI4EICHackathon2023-Streamlit-main/streamlit_leaderboard/pages/chatGPT.py", line 175, in <module>
+    prompt_id=st.session_state.prompt_ids[int(n/3)-1],
+IndexError: list index out of range
+ERROR:root:user10 double typed.
+Traceback (most recent call last):
+  File "/home/admin/AI4EICHackathon2023-Streamlit-main/streamlit_leaderboard/pages/chatGPT.py", line 175, in <module>
+    prompt_id=st.session_state.prompt_ids[int(n/3)-1],
+IndexError: list index out of range
+ERROR:root:user10 spammed chat.
+NoneType: None
+ERROR:root:user10 spammed chat.
+NoneType: None
+ERROR:root:user10 spammed chat.
+NoneType: None
+ERROR:root:user10 spammed chat.
+NoneType: None
+ERROR:root:user10 spammed chat.
+NoneType: None
+ERROR:root:user10 double typed.
+Traceback (most recent call last):
+  File "/home/admin/AI4EICHackathon2023-Streamlit-main/streamlit_leaderboard/pages/chatGPT.py", line 175, in <module>
+    prompt_id=st.session_state.prompt_ids[int(n/3)-1],
+IndexError: list index out of range
+ERROR:root:user10 double typed.
+Traceback (most recent call last):
+  File "/home/admin/AI4EICHackathon2023-Streamlit-main/streamlit_leaderboard/pages/chatGPT.py", line 175, in <module>
+    prompt_id=st.session_state.prompt_ids[int(n/3)-1],
+IndexError: list index out of range
+ERROR:root:user10 spammed chat.
+NoneType: None
+ERROR:root:user10 spammed chat.
+NoneType: None
+ERROR:root:user10 spammed chat.
+NoneType: None

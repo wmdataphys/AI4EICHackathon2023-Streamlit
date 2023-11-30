@@ -4,7 +4,9 @@ from leaderboard_utils.utils import utility_config,validate_credentials,scp_file
 from main_app import config, openAI_utils
 import uuid
 from trubrics.integrations.streamlit import FeedbackCollector
+import logging
 
+logging.basicConfig(filename='GPTLogs.log',level=logging.ERROR)
 
 
 @st.cache_data
@@ -82,6 +84,7 @@ if "aws_state" not in st.session_state:
 
 if "total_tokens" not in st.session_state:
     st.session_state.total_tokens = 0
+
 if "disable_chat" not in st.session_state:
     st.session_state.disable_chat = False
 
@@ -104,6 +107,7 @@ if not st.session_state.submit_button_clicked:
         st.session_state.submit_button_clicked = True
         st.session_state['messages']= openAI_utils.setContext(st.session_state.user_session_context)
         st.session_state.len_context = len(st.session_state['messages'])
+        st.session_state.disable_chat = False
         print(st.session_state.len_context)
 
 
@@ -111,7 +115,7 @@ if st.session_state.submit_button_clicked:
     with st.sidebar:
         st.subheader("Options")
         st.session_state.stream = st.toggle("Stream LLM response",value=True)
-        st.sidebar.text(f"Number of tokens used: {st.session_state.total_tokens}")
+        st.sidebar.text(f"Number of tokens used: {st.session_state.total_tokens} / 12000")
         if st.button("Start New Session"):
             st.session_state.submit_button_clicked = False
             st.session_state.show_feedback_controls = False
@@ -123,7 +127,7 @@ if st.session_state.submit_button_clicked:
             st.session_state.last_message_count = 0
             st.session_state.len_context = 0
             st.experimental_rerun()
-    
+
     st.write(f"Session Name: {st.session_state.user_session_name}")
     st.write(f"Session Context: {st.session_state.user_session_context}")
     collector = init_trubrics()
@@ -160,25 +164,29 @@ if st.session_state.submit_button_clicked:
             #    prompt_id = st.session_state.prompt_ids[prompt_index]
             #else:
             #    prompt_id = None
-            feedback = collector.st_feedback(
-                component="default",
-                feedback_type="thumbs",
-                open_feedback_label="[Optional] Provide additional feedback",
-                model=model,
-                tags=tags,
-                key=feedback_key,
-                prompt_id=st.session_state.prompt_ids[int(n/3)-1],
-                user_id=username,
-            )
-            if feedback:
-                with st.sidebar:
-                    st.write(":orange[Here's the raw feedback you sent to [Trubrics](https://trubrics.streamlit.app/):]")
-                    st.write(feedback)
-    
+            try:
+                feedback = collector.st_feedback(
+                    component="default",
+                    feedback_type="thumbs",
+                    open_feedback_label="[Optional] Provide additional feedback",
+                    model=model,
+                    tags=tags,
+                    key=feedback_key,
+                    prompt_id=st.session_state.prompt_ids[int(n/3)-1],
+                    user_id=username,
+                )
+                if feedback:
+                    with st.sidebar:
+                        st.write(":orange[Here's the raw feedback you sent to [Trubrics](https://trubrics.streamlit.app/):]")
+                        st.write(feedback)
+            except IndexError as e:
+                st.error("Please slow down...")
+                logging.error(f"{st.session_state.username} double typed.",exc_info=True)
 
 
     if st.session_state.total_tokens > 12000:
         st.error("You have exceeded the maximum number of tokens, please start a new session")
+        st.session_state.disable_chat = True
         if st.button("Start New Session",key='MaxTokensReached'):
             st.session_state.submit_button_clicked = False
             st.session_state.show_feedback_controls = False
@@ -189,10 +197,10 @@ if st.session_state.submit_button_clicked:
             st.session_state.session_id = str(uuid.uuid4())
             st.session_state.last_message_count = 0
             st.session_state.len_context = 0
-            st.session_state.disable_chat = True
     
     #gen_form = st.form(key="generation_form")
     if prompt := st.chat_input("Ask your question",disabled=st.session_state.disable_chat):
+        st.session_state.disable_chat = True
         messages.append({"role": "user", "content": prompt})
         st.chat_message("user").write(prompt)
         client = OpenAI(api_key=st.secrets.get("OPENAI_API_KEY"))
@@ -201,17 +209,29 @@ if st.session_state.submit_button_clicked:
             if st.session_state.stream:
                 message_placeholder = st.empty()
                 generation = ""
-                for part in client.chat.completions.create(model=model, messages=messages, stream=True,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS):
-                    generation += part.choices[0].delta.content or ""
-                    message_placeholder.markdown(generation + "▌")
-                message_placeholder.markdown(generation)
+                try:
+                    for part in client.chat.completions.create(model=model, messages=messages, stream=True,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS):
+                        generation += part.choices[0].delta.content or ""
+                        message_placeholder.markdown(generation + "▌")
+                    message_placeholder.markdown(generation)
+                except:
+                    st.session_state.disable_chat = True
+                    st.error("Dont do that. Username logged.")
+                    logging.error(f"{st.session_state.username} injected an enormous prompt.",exc_info=True)
+                    st.stop()
             else:
-                response = client.chat.completions.create(model=model, messages=messages,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS)
-                generation = response.choices[0].message.content
-                st.write(generation)
-
+                try:
+                    response = client.chat.completions.create(model=model, messages=messages,temperature = openAI_utils.TEMPERATURE, max_tokens=openAI_utils.MAX_TOKENS)
+                    generation = response.choices[0].message.content
+                    st.write(generation)
+                except:
+                    st.session_state.disable_chat = True
+                    st.error("Dont do that. Username logged.")
+                    logging.error(f"{st.session_state.username} injected an enormous prompt.",exc_info=True)
+                    st.stop()
             messages.append({"role": "assistant", "content": generation})
             st.session_state.total_tokens += openAI_utils.num_tokens_from_messages(messages)
+    
             logged_prompt = collector.log_prompt(
                 config_model={"model": model},
                 prompt=prompt,
@@ -219,15 +239,17 @@ if st.session_state.submit_button_clicked:
                 session_id=st.session_state.session_id,
                 tags=tags,                    
                 user_id=username,
+                metadata=custom_data,
             )
+            st.error('Please slow down...')
+            logging.error(f"{st.session_state.username} spammed chat.",exc_info=True)
+            st.session_state.disable_chat = False
+
             st.session_state.prompt_ids.append(logged_prompt.id)
             print(st.session_state.total_tokens)
+            st.session_state.disable_chat = False
             st.rerun()
 
-# Check if the generated response contains code
-response_contains_code = any(
-    "```" in msg["content"] for msg in st.session_state.messages if msg["role"] == "assistant"
-)
 
 # Check if the generated response contains code
 response_contains_code = any(
