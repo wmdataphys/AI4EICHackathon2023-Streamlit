@@ -82,6 +82,8 @@ if "aws_state" not in st.session_state:
 
 if "total_tokens" not in st.session_state:
     st.session_state.total_tokens = 0
+if "disable_chat" not in st.session_state:
+    st.session_state.disable_chat = False
 
 #with st.sidebar:
 #    stream = st.toggle("Stream LLM response",value=True)
@@ -187,10 +189,10 @@ if st.session_state.submit_button_clicked:
             st.session_state.session_id = str(uuid.uuid4())
             st.session_state.last_message_count = 0
             st.session_state.len_context = 0
-            st.rerun()
+            st.session_state.disable_chat = True
     
     #gen_form = st.form(key="generation_form")
-    if prompt := st.chat_input("Ask your question"):
+    if prompt := st.chat_input("Ask your question",disabled=st.session_state.disable_chat):
         messages.append({"role": "user", "content": prompt})
         st.chat_message("user").write(prompt)
         client = OpenAI(api_key=st.secrets.get("OPENAI_API_KEY"))
@@ -215,7 +217,7 @@ if st.session_state.submit_button_clicked:
                 prompt=prompt,
                 generation=generation,
                 session_id=st.session_state.session_id,
-                tags=tags,
+                tags=tags,                    
                 user_id=username,
             )
             st.session_state.prompt_ids.append(logged_prompt.id)
