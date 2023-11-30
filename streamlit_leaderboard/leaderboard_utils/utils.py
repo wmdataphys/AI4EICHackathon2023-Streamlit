@@ -18,7 +18,7 @@ def relative_time(t_diff):
         else:
             return f"{seconds}s"
 def clear_all():
-    with key in st.session_state.keys():
+    for key in st.session_state.keys():
         del st.session_state[key]
 def clear_chatSession():
     pass
