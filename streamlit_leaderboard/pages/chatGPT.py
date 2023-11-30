@@ -83,6 +83,9 @@ if "aws_state" not in st.session_state:
 if "total_tokens" not in st.session_state:
     st.session_state.total_tokens = 0
 
+#with st.sidebar:
+#    stream = st.toggle("Stream LLM response",value=True)
+
 if not st.session_state.submit_button_clicked:
     st.session_state["Chat_sessionID"] = str(uuid.uuid4())
     st.container()
@@ -91,6 +94,7 @@ if not st.session_state.submit_button_clicked:
     user_session_name = ChatSessionForm.text_input("Session Name", placeholder="Enter a name for your session")
     user_session_context = ChatSessionForm.text_input("Session Context", placeholder="Enter the context you would like to set for this session", value=None)
     submit_button = ChatSessionForm.form_submit_button("Start Chat Session")
+    #stream = st.toggle("Stream LLM Response",value=True)
 
     if submit_button:
         st.session_state.user_session_name = user_session_name
@@ -102,6 +106,22 @@ if not st.session_state.submit_button_clicked:
 
 
 if st.session_state.submit_button_clicked:
+    with st.sidebar:
+        st.subheader("Options")
+        st.session_state.stream = st.toggle("Stream LLM response",value=True)
+        st.sidebar.text(f"Number of tokens used: {st.session_state.total_tokens}")
+        if st.button("Start New Session"):
+            st.session_state.submit_button_clicked = False
+            st.session_state.show_feedback_controls = False
+            st.session_state.aws_state = False
+            st.session_state.messages = []
+            st.session_state.prompt_ids = []
+            st.session_state.total_tokens = 0
+            st.session_state.session_id = str(uuid.uuid4())
+            st.session_state.last_message_count = 0
+            st.session_state.len_context = 0
+            st.experimental_rerun()
+    
     st.write(f"Session Name: {st.session_state.user_session_name}")
     st.write(f"Session Context: {st.session_state.user_session_context}")
     collector = init_trubrics()
@@ -123,16 +143,16 @@ if st.session_state.submit_button_clicked:
     for n, msg in enumerate(messages):
         st.chat_message(msg["role"]).write(msg["content"])
         if msg["role"] == "assistant" and n > st.session_state.len_context:
-            feedback_key = f"feedback_{int(n / 3)}"
-            print("n:", n, "len(prompt_ids):", len(st.session_state.prompt_ids))
+            feedback_key = f"feedback_{int(n / 2)}"
+            #print("n:", n, "len(prompt_ids):", len(st.session_state.prompt_ids))
             prompt_index = int(n / 3) - 1
-            print("prompt_index:", prompt_index)
-            print("st.session_state.prompt_ids:", st.session_state.prompt_ids)
+            #print("prompt_index:", prompt_index)
+            #print("st.session_state.prompt_ids:", st.session_state.prompt_ids)
             prompt_id = st.session_state.prompt_ids[prompt_index] if prompt_index >= 0 else None
-            print("prompt_id:", prompt_id)
+            #print("prompt_id:", prompt_id)
 
-            if feedback_key not in st.session_state:
-                st.session_state[feedback_key] = None
+            #if feedback_key not in st.session_state:
+            #    st.session_state[feedback_key] = None
 
             if prompt_index >= 0 and prompt_index < len(st.session_state.prompt_ids):
                 prompt_id = st.session_state.prompt_ids[prompt_index]
@@ -173,7 +193,7 @@ if st.session_state.submit_button_clicked:
                 st.write(generation)
 
             messages.append({"role": "assistant", "content": generation})
-            st.session_state.total_tokens = openAI_utils.num_tokens_from_messages(messages)
+            st.session_state.total_tokens += openAI_utils.num_tokens_from_messages(messages)
             logged_prompt = collector.log_prompt(
                 config_model={"model": model},
                 prompt=prompt,
@@ -181,7 +201,6 @@ if st.session_state.submit_button_clicked:
                 session_id=st.session_state.session_id,
                 tags=tags,
                 user_id=username,
-                metadata=custom_data,
             )
             st.session_state.prompt_ids.append(logged_prompt.id)
             print(st.session_state.total_tokens)

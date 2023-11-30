@@ -6,5 +6,21 @@
   "Team2" : {
     "users" : [ "user3", "user4" ],
     "passwords" : [ "AI4EIC", "AI4EIC" ]
+  },
+  "Team3" : {
+    "users" : [ "user5", "user6" ],
+    "passwords" : [ "AI4EIC", "AI4EIC" ]
+  },
+  "Team4" : {
+    "users" : [ "user7", "user8" ],
+    "passwords" : [ "AI4EIC", "AI4EIC" ]
+  },
+  "Team5" : {
+    "users" : [ "user9", "user10" ],
+    "passwords" : [ "AI4EIC", "AI4EIC" ]
+  },
+  "Team6" : {
+    "users" : [ "user11", "user12" ],
+    "passwords" : [ "AI4EIC", "AI4EIC" ]
   }
 }
