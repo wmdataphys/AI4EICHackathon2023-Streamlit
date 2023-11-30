@@ -80,6 +80,9 @@ if "last_message_count" not in st.session_state:
 if "aws_state" not in st.session_state:
     st.session_state.aws_state = True
 
+if "total_tokens" not in st.session_state:
+    st.session_state.total_tokens = 0
+
 if not st.session_state.submit_button_clicked:
     st.session_state["Chat_sessionID"] = str(uuid.uuid4())
     st.container()
@@ -101,9 +104,10 @@ if not st.session_state.submit_button_clicked:
 if st.session_state.submit_button_clicked:
     st.write(f"Session Name: {st.session_state.user_session_name}")
     st.write(f"Session Context: {st.session_state.user_session_context}")
-    #collector = init_trubrics()
+    collector = init_trubrics()
     custom_data ={"session_name":st.session_state.user_session_name,
-                  "session_context":st.session_state.user_session_context}
+                  "session_context":st.session_state.user_session_context,
+                  "tokens_used":st.session_state.total_tokens}
 
     if "prompt_ids" not in st.session_state:
         st.session_state["prompt_ids"] = []
@@ -120,31 +124,30 @@ if st.session_state.submit_button_clicked:
         st.chat_message(msg["role"]).write(msg["content"])
         if msg["role"] == "assistant" and n > st.session_state.len_context:
             feedback_key = f"feedback_{int(n / 3)}"
-            # print("n:", n, "len(prompt_ids):", len(st.session_state.prompt_ids))
-            # prompt_index = int(n / 3) - 1
-            # print("prompt_index:", prompt_index)
-            # print("st.session_state.prompt_ids:", st.session_state.prompt_ids)
-            # prompt_id = st.session_state.prompt_ids[prompt_index] if prompt_index >= 0 else None
-            # print("prompt_id:", prompt_id)
+            print("n:", n, "len(prompt_ids):", len(st.session_state.prompt_ids))
+            prompt_index = int(n / 3) - 1
+            print("prompt_index:", prompt_index)
+            print("st.session_state.prompt_ids:", st.session_state.prompt_ids)
+            prompt_id = st.session_state.prompt_ids[prompt_index] if prompt_index >= 0 else None
+            print("prompt_id:", prompt_id)
 
             if feedback_key not in st.session_state:
                 st.session_state[feedback_key] = None
 
-            # if prompt_index >= 0 and prompt_index < len(st.session_state.prompt_ids):
-            #     prompt_id = st.session_state.prompt_ids[prompt_index]
-            # else:
-            #     prompt_id = None
-            feedback = None
-            # feedback = collector.st_feedback(
-            #     component="default",
-            #     feedback_type="thumbs",
-            #     open_feedback_label="[Optional] Provide additional feedback",
-            #     model=model,
-            #     tags=tags,
-            #     key=feedback_key,
-            #     prompt_id=st.session_state.prompt_ids[int(n/3)-1],
-            #     user_id=username,
-            # )
+            if prompt_index >= 0 and prompt_index < len(st.session_state.prompt_ids):
+                prompt_id = st.session_state.prompt_ids[prompt_index]
+            else:
+                prompt_id = None
+            feedback = collector.st_feedback(
+                component="default",
+                feedback_type="thumbs",
+                open_feedback_label="[Optional] Provide additional feedback",
+                model=model,
+                tags=tags,
+                key=feedback_key,
+                prompt_id=st.session_state.prompt_ids[int(n/3)-1],
+                user_id=username,
+            )
             if feedback:
                 with st.sidebar:
                     st.write(":orange[Here's the raw feedback you sent to [Trubrics](https://trubrics.streamlit.app/):]")
@@ -169,17 +172,19 @@ if st.session_state.submit_button_clicked:
                 generation = response.choices[0].message.content
                 st.write(generation)
 
-            # logged_prompt = collector.log_prompt(
-            #     config_model={"model": model},
-            #     prompt=prompt,
-            #     generation=generation,
-            #     session_id=st.session_state.session_id,
-            #     tags=tags,
-            #     user_id=username,
-            #     metadata=custom_data,
-            # )
-            #st.session_state.prompt_ids.append(logged_prompt.id)
             messages.append({"role": "assistant", "content": generation})
+            st.session_state.total_tokens = openAI_utils.num_tokens_from_messages(messages)
+            logged_prompt = collector.log_prompt(
+                config_model={"model": model},
+                prompt=prompt,
+                generation=generation,
+                session_id=st.session_state.session_id,
+                tags=tags,
+                user_id=username,
+                metadata=custom_data,
+            )
+            st.session_state.prompt_ids.append(logged_prompt.id)
+            print(st.session_state.total_tokens)
             st.rerun()
 
 # Check if the generated response contains code
