@@ -1,10 +1,55 @@
 {
   "Team1" : {
-    "users" : [ "user1", "user2" ],
-    "passwords" : [ "AI4EIC", "AI4EIC" ]
+    "name" : "Messed Ups",
+    "users" : ["Shivam Raj", "Bhavya Singhal", "Avnish Singh", "Md. Imran Hossain"],
+    "usernames" : [ "rshivam", "sbhavya", "savinsh", "himran" ],
+    "passwords" : [ "uQn0T2xirC", "i1YY5Ws6ui", "xPagir5zHe", "2HQJ2LHptU" ],
+    "instances" : ["54.227.66.180", "18.212.96.88", "54.221.153.208", "3.90.103.242"],
+    "openAI_keys" : ["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", "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",
+                      "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", "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"]
   },
   "Team2" : {
-    "users" : [ "user3", "user4" ],
-    "passwords" : [ "AI4EIC", "AI4EIC" ]
+    "name" : "Jets3",
+    "users" : [ "Dmitrii Kalinkin", "Derek Anderson", "Charles Hughes" ],
+    "usernames" : ["kdmitrii", "aderek", "hcharles"],
+    "passwords" : [ "P25z66spvT", "7dKzkcyHRM", "Mc5PGGvfrM" ],
+    "instances" : ["34.207.117.194", "54.167.40.63", "34.207.143.3"],
+    "openAI_keys" : ["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", "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",
+                    "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"]
+  },
+  "Team3" : {
+    "name" : "SPIN 2023 Local Organization Committee",
+    "users" : ["Connor Pecar", "Gregory Matousek", "Matthew McEneany", "Simon Schneider"],
+    "usernames" : ["pconnor", "mgregory", "mmatthew", "ssimon"],
+    "passwords" : ["h1k4bpdgHL", "08D0o4e0GC", "3ixN5tRm8G", "LBvjBuej5q"],
+    "instances" : ["54.164.136.148", "3.91.244.183", "34.203.214.207", "54.157.14.89"],
+    "openAI_keys" : ["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", "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", 
+                    "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"]
+  },
+  "Team4" : {
+    "name" : "Small Language Models",
+    "users" : ["Vinicius Mikuni", "Fernando Torales", "Manuel Szewc"],
+    "usernames" : ["mvinicius", "tfernando", "smanuel"],
+    "passwords" : ["A6k2vAgEZ6", "ivrZB93RT1", "ow88dFeQGX"],
+    "instances" : ["54.242.0.174", "54.242.189.168", "54.84.43.110"],
+    "openAI_keys" : ["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", "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",
+                      "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"]
+  },
+  "Team5" : {
+    "name" : "404 Brain Not Found",
+    "users" : ["Roberto Preghenella", "Simon Gardner", "Alex Smith"],
+    "usernames" : ["proberto", "gsimon", "salex"],
+    "passwords" : ["gn0TnceoR5", "4tgAZHbi5G", "A37Yyj6U3W"],
+    "instances" : ["52.54.159.232", "54.227.57.101", "18.212.217.209"],
+    "openAI_keys" : ["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", "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",
+                    "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"]
+  },
+  "Team6" : {
+    "name" : "EPSCI",
+    "users" : ["David Lawrence", "Gagik Gavalian"],
+    "usernames" : ["ldavid", "ggagik"],
+    "passwords" : ["xscmq2xZYW", "3iTbHhaa0D"],
+    "instances" : ["34.201.151.231", "54.237.222.162"],
+    "openAI_keys" : ["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", "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"]
   }
 }

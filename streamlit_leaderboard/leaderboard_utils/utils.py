@@ -6,7 +6,7 @@ import json
 # funtions
 def relative_time(t_diff):
     days, seconds = t_diff.days, t_diff.seconds
-    if days > 0: 
+    if days > 0:
         return f"{days}d"
     else:
         hours = t_diff.seconds // 3600
@@ -18,28 +18,59 @@ def relative_time(t_diff):
         else:
             return f"{seconds}s"
 def clear_all():
-    with key in st.session_state.keys():
+    for key in st.session_state.keys():
         del st.session_state[key]
 def clear_chatSession():
     pass
-    
+
 def log_out():
-    
-        return True
-    else:
-        return None
-    
+    return True
+
+
 def get_leaderboard_dataframe(csv_file = 'leaderboard.csv', greater_is_better = True):
     df_leaderboard = pd.read_csv(csv_file)
-    df_leaderboard = df_leaderboard.sort_values("TotalScore", ascending = not greater_is_better)
+    data = {"Teams":[], "Members":[], "Total Score":[], "Total Submissions":[], "Q1 Score":[], "Q2 Score":[], "Total Tokens used so far":[]}
+    # build a dataframe from all sub directories.
+    #df = None
+    #for idx, keys in enumerate(st.secrets.NamesOfUsers.keys()):
+    #    if(idx == 0):
+    #        df = pd.read_csv(os.path.join(st.secrets.UserInfoDir, ))
+    teamnames = df_leaderboard["teamname"].unique()
+    for team in teamnames:
+        tmpdf = df_leaderboard[df_leaderboard.teamname == team]
+        data["Teams"].append(tmpdf["NameOfTeam"].unique()[0])
+        print (data["Teams"])
+        data["Members"].append(tmpdf["NameOfUser"].values)
+        q1best = tmpdf[tmpdf.QuestionAttempted == 1]
+        sub1 = len(q1best)
+        q1best = 0 if q1best.empty else q1best["Scores"].max()
+           
+        q2best = tmpdf[tmpdf.QuestionAttempted == 2]
+        sub2 = len(q2best)
+        q2best = 0 if q2best.empty else q2best["Scores"].max()
+        
+            
+        Total = q1best + q2best
+        data["Q1 Score"].append(q1best)
+        data["Q2 Score"].append(q2best)
+        data["Total Score"].append(Total)
+        data["Total Submissions"].append(sub1 + sub2)
+        data["Total Tokens used so far"].append(tmpdf.TokensUsed.sum())
+    
+    returndf = pd.DataFrame(data)
+    for col in returndf.columns:
+        print (col)
+        print (returndf[col])
+    print (returndf)
+    returndf.sort_values(by = "Total Score", inplace = True)
     """
     df_leaderboard['counter'] = 1
     df_leaderboard = df_leaderboard.groupby('usernames').agg({"TotalScore": "max"})
     df_leaderboard = df_leaderboard.sort_values("TotalScore", ascending = not greater_is_better)
-    df_leaderboard = df_leaderboard.reset_index()                                                    
+    df_leaderboard = df_leaderboard.reset_index()
     df_leaderboard.columns = ['usernames','TotalScore', 'TotalSubmissions', 'TokensUsed']
     """
-    return df_leaderboard
+    return returndf
 
 def utility_config(default_component: bool = True):
     st.subheader("Input your Trubrics credentials:")
@@ -80,24 +111,22 @@ def validate_credentials(username, password):
             return True
     return False
 
-def scp_file(filename, destpath,push):
+def scp_file(filename, destpath,push,host):
     if push: # Push to AWS instance
-        host = r"@18.234.234.7"
         user = 'admin'
-        password = r"15Ad456Hck"
+        password = st.secrets.ADMIN_PASSWORD
         remote_path = destpath
         local_path = filename
         #print(filename)
-        os.system(f"sshpass -p \"{password}\" scp {local_path} {user}{host}:{remote_path}")
+        print ("Running the command :" + f"sshpass -p \"{password}\" scp {local_path} {user}\@{host}:{remote_path}")
+        return os.system(f"sshpass -p \"{password}\" scp {local_path} {user}\@{host}:{remote_path}")
     else: # Pull from their aws instance given a file_path
-        host = r"@18.234.234.7"
         user = 'admin'
-        password = r"15Ad456Hck"
+        password = st.secrets.ADMIN_PASSWORD
         local_path = destpath
         remote_path = filename
-        #print(filename)
-        #print(local_path)
-        os.system(f"sshpass -p \"{password}\" scp {user}{host}:{remote_path} "+ local_path.replace(" ","\ "))
+        print ("Running the command :" + f"sshpass -p \"{password}\" scp {user}\@{host}:/home/user/workspace/{remote_path} "+ " " + local_path.replace(" ","\ "))
+        return os.system(f"sshpass -p \"{password}\" scp {user}\@{host}:/home/user/workspace/{remote_path}"+ " " + local_path.replace(" ","\ "))
 
 def write_file(filename,code,username):
     filename = str(filename)
@@ -159,12 +188,13 @@ class DB_Utils:
         return self.DB_URL
     def getDB_NAME(self):
         return self.DB_NAME
-        
+
 class OPENAI_Utils:
     def __init__(self):
         self.MAX_TOKENS = 4096
         self.GPT_MODEL = "gpt-3.5-turbo-1106"
         self.TEMPERATURE = 1.0
+        self.MAX_CONTENT_LENGTH = 12000
 
     def getMaxTokens(self):
         return self.MAX_TOKENS
@@ -196,13 +226,12 @@ class OPENAI_Utils:
         return code,text,name
 
 
-    def write_file(self,filename,code,username):
+    def write_file(self,filename,code, location):
         filename = str(filename)
-        username = str(username)
         try:
-            if not os.path.exists(os.path.join(r"../../",username)):
-                os.makedirs(os.path.join(r"../../",username))
-            file_path = os.path.join(r"../../",username,filename)
+            if not os.path.exists(location):
+                os.makedirs(location)
+            file_path = os.path.join(location, filename)
             with open(file_path, 'w') as file:
                 file.write(code)
             print('Wrote file.')
@@ -210,24 +239,22 @@ class OPENAI_Utils:
         except:
             print('Error writing your code. Likely an issue with the file name or your code cell is blank.')
 
-    def scp_file(self,filename, destpath,push):
+    def scp_file(self,filename, destpath,push, host):
         if push: # Push to AWS instance
-            host = r"@18.234.234.7"
             user = 'admin'
-            password = r"15Ad456Hck"
+            password = st.secrets.ADMIN_PASSWORD
             remote_path = destpath
             local_path = filename
             #print(filename)
-            os.system(f"sshpass -p \"{password}\" scp {local_path} {user}{host}:{remote_path}")
+            return os.system(f"sshpass -p \"{password}\" scp {local_path} {user}{host}:{remote_path}")
         else: # Pull from their aws instance given a file_path
-            host = r"@18.234.234.7"
             user = 'admin'
-            password = r"15Ad456Hck"
+            password = st.secrets.ADMIN_PASSWORD
             local_path = destpath
             remote_path = filename
             #print(filename)
             #print(local_path)
-            os.system(f"sshpass -p \"{password}\" scp {user}{host}:{remote_path} "+ local_path.replace(" ","\ "))
+            return os.system(f"sshpass -p \"{password}\" scp {user}{host}:{remote_path} "+ local_path.replace(" ","\ "))
 
         """
         ssh = paramiko.SSHClient()
@@ -257,15 +284,17 @@ class OPENAI_Utils:
         Politely decline answering any conversation that is not related to the topic."""
 
         return [sys_context_1, sys_context_2, sys_context_3]
-    
+
     def setContext(self, content = None)->list:
         msgs = []
+        #print(content)
         if(content):
-            for msg in content:
-                msgs.append({"role" : "system", "content" : msg})
+            msgs.append({"role" : "system", "content" : content})
         else:
             for msg in self.getDefaultContexts():
-                msgs.append({"role" : "system", "content" : msg})
+                msgs.append({"role" : "system", "content" : msg,})
+
+        msgs.append({"role": "assistant", "content": "How can I help you?"})
         return msgs
 
     def num_tokens_from_messages(self, messages) -> int:
@@ -280,6 +309,5 @@ class OPENAI_Utils:
                 num_tokens += len(encoding.encode(value))
                 if key == "name":
                     num_tokens += tokens_per_name
-        num_tokens += 4  # every reply is primed with <|start|>assistant<|message|> 
+        num_tokens += 4  # every reply is primed with <|start|>assistant<|message|>
         return num_tokens
-

@@ -1,5 +1,20 @@
-,teamname,usernames,TotalScore,TotalSumbissions,Q1BestScore,Q2BestScore,QuestionsAttempted,TokensUsed,Q1Scores,Q2Scores,TotalSessions
-0,Team1,user1,0,0,0,0,0,0,[],[],0
-1,Team1,user2,0,0,0,0,0,0,[],[],0
-2,Team2,user3,0,0,0,0,0,0,[],[],0
-3,Team2,user4,0,0,0,0,0,0,[],[],0
+teamname,NameOfTeam,username,NameOfUser,QuestionAttempted,TokensUsed,Score
+Team1,Messed Ups,rshivam,Shivam Raj,99.918,99.614,498.374
+Team1,Messed Ups,sbhavya,Bhavya Singhal,99.918,99.614,498.374
+Team1,Messed Ups,savinsh,Avnish Singh,99.918,99.614,498.374
+Team1,Messed Ups,himran,Md. Imran Hossain,99.918,99.614,498.374
+Team2,Jets3,kdmitrii,Dmitrii Kalinkin,99.935,99.777,399.266
+Team2,Jets3,aderek,Derek Anderson,99.935,99.777,399.266
+Team2,Jets3,hcharles,Charles Hughes,99.935,99.777,399.266
+Team3,SPIN 2023 Local Organization Committee,pconnor,Connor Pecar,99.9325,99.7735,199.706
+Team3,SPIN 2023 Local Organization Committee,mgregory,Gregory Matousek,99.9325,99.7735,199.706
+Team3,SPIN 2023 Local Organization Committee,mmatthew,Matthew McEneany,99.9325,99.7735,199.706
+Team3,SPIN 2023 Local Organization Committee,ssimon,Simon Schneider,99.9325,99.7735,199.706
+Team4,Small Language Models,mvinicius,Vinicius Mikuni,99.9285,99.77,199.6985
+Team4,Small Language Models,tfernando,Fernando Torales,99.9285,99.77,199.6985
+Team4,Small Language Models,smanuel,Manuel Szewc,99.9285,99.77,199.6985
+Team5,404 Brain Not Found,proberto,Roberto Preghenella,99.919,99.7565,399.1885
+Team5,404 Brain Not Found,gsimon,Simon Gardner,99.919,99.7565,399.1885
+Team5,404 Brain Not Found,salex,Alex Smith,99.919,99.7565,399.1885
+Team6,EPSCI,ldavid,David Lawrence,99.9175,99.6135,199.531
+Team6,EPSCI,ggagik,Gagik Gavalian,99.9175,99.6135,199.531
